@@ -60,14 +60,13 @@ def default():
     <body>
     <h1>Convertir XML i18n: </h1>
     <form action="/upload" method="POST" enctype="multipart/form-data">
-    <p>%s</p>
-      <p>Idioma del fichero final: <input type="text" name="idioma" placeholder="Idioma: es|en|fr|pt-br|ro|..."/></p>
+     <p>Idioma del fichero final: <input type="text" name="idioma" placeholder="Idioma: es|en|fr|pt-br|ro|..."/></p>
       <p>Fichero:<input type="file"  name="file"/></p>
       <p><input type=submit value="Convertir"/></p>
     </form>
     </body>
     </html>
-    '''%(app.config['UPLOAD_FOLDER'])
+    '''
     return renderizar_html(respuesta)
 
 
@@ -75,24 +74,24 @@ def default():
 @app.route("/upload", methods=["POST"])
 def upload_file():
     global XML_PARSEADO
-    print "upload_file -> method:",request.method
+    #print "upload_file -> method:",request.method
     if request.method == 'POST':
         idioma=request.form['idioma']
         file_upload = request.files['file']
-        print "upload_file -> file_upload.filename:",file_upload.filename,allowed_file(file_upload.filename)
+        #print "upload_file -> file_upload.filename:",file_upload.filename,allowed_file(file_upload.filename)
         
             
         if file and allowed_file(file_upload.filename):
             filename = secure_filename(file_upload.filename)
-            print "upload_file -> secure_filename:",filename
+            #print "upload_file -> secure_filename:",filename
         
-            #print "upload_file -> content:",file_upload.stream.read()
+            ##print "upload_file -> content:",file_upload.stream.read()
             #xml_final=parsear(file_upload.stream.read(),request.form['idioma'],filename)
             cadena=file_upload.stream.read()
-            #print "upload_file -> xml_final:",cadena
+            ##print "upload_file -> xml_final:",cadena
             
             XML_PARSEADO=parsear(cadena,request.form['idioma'])
-            #print "XML",xml_final
+            ##print "XML",xml_final
             #url = url_for('uploaded_file', filename=fichero_final)
             url=""
             respuesta= '''
@@ -106,7 +105,7 @@ def upload_file():
               </body>
               </html>
               '''%(idioma,filename,filename)
-            print XML_PARSEADO
+            #print XML_PARSEADO
 
             return renderizar_html(respuesta)
             #return json.dumps({'status': 'ok', 'url': url, 'name': filename, 'name_orig': filename_orig,'fichero_final': fichero_final,'idioma':idioma})
@@ -119,7 +118,7 @@ def upload_file():
 @app.route('/download/<filename>')
 def download_file(filename):
   global XML_PARSEADO
-  #print "download_file",XML_PARSEADO
+  ##print "download_file",XML_PARSEADO
   
   response=make_response(XML_PARSEADO)
   response.headers.add('Last-Modified', datetime.datetime.now())
@@ -141,7 +140,7 @@ def renderizar_html(respuesta):
 
 def parsear(contenido, idioma):
     xmlDocument = xml.dom.minidom.parseString(contenido)
-    print "parsear",xmlDocument
+    #print "parsear",xmlDocument
     elemento=xmlDocument.getElementsByTagName("i18n")
     for n in elemento:
         n.setAttribute("languages","es|en|fr|ro|pt-br|it")
